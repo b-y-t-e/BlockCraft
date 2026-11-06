@@ -24,7 +24,7 @@ i dokumentacja po polsku.
   - nowa akcja w grze: `PadAction` z domyślnym przyciskiem w `Core/PadBindings.cs` (da się ją przypisać w „Przyciski...”);
   - nic tylko na klawisz bez odpowiednika na padzie; sprawdzić w `--showcase --pad-preview` i `--selftest --pad-only`.
 - Bazowa rozgrywka jak w MC 1.8; nowe funkcje mogą od niej odchodzić — opisać to w komentarzu i dokumentacji.
-- Repozytorium: b-y-t-e/BlockCraft (remote `fork`); bez PR do projektu źródłowego (`origin`).
+- Repozytorium: b-y-t-e/BlockCraft (remote `origin`, praca na `main`); projekt źródłowy fkliczewski/BlockCraft jako `upstream` tylko do odczytu, bez PR.
 - Paczki zasobów: bez paczki gra wygląda jak dotąd; dane z paczek przez `ResourcePacks`, plan w `docs/PACZKI_ZASOBOW_PLAN.md`.
 - Menu: najwyżej kilka opcji naraz, jedna główna akcja na górze. Nowe ustawienie trafia do właściwej kategorii
   `OptionsScreen` (najwyżej 6 opcji w kategorii) z jednozdaniowym opisem w `Hint`.
