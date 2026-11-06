@@ -1,4 +1,4 @@
-# Plan: BlockCraft na PC, w przeglądarce i na telefonie
+# Plan: Blokolo na PC, w przeglądarce i na telefonie
 
 **Cel:** jeden kod w .NET (silnie typowany), wersje na PC i w przeglądarce, później Android, z obsługą pada
 i dotyku oraz grafiką ładniejszą niż w Minecrafcie. Etapy grafiki: `docs/GRAFIKA_PLAN.md`.
@@ -20,16 +20,16 @@ Dlaczego:
 ## Struktura kodu
 
 ```
-BlockCraft.Core        – logika gry: świat, bloki, encje, przedmioty, protokół sieci, logika GUI
+Blokolo.Core        – logika gry: świat, bloki, encje, przedmioty, protokół sieci, logika GUI
                          (bez OpenTK; System.Numerics)
-BlockCraft.Client      – pętla klienta, ekrany, mesher, opis przebiegów renderu; interfejsy:
+Blokolo.Client      – pętla klienta, ekrany, mesher, opis przebiegów renderu; interfejsy:
                          IGpu (w stylu WebGPU), IInput (pad + dotyk), IAudio, IStorage, ITransport, IJobs
-BlockCraft.Gpu.WebGpu  – backend PC (wgpu-native) i przeglądarki (navigator.gpu)
-BlockCraft.Gpu.OpenGL  – obecny render jako tryb zgodności
-BlockCraft.Desktop     – okno, OpenAL, pliki, wątki, Tailscale/TCP
-BlockCraft.Web         – net10.0-browser: canvas, requestAnimationFrame, Gamepad API, dotyk, WebAudio,
+Blokolo.Gpu.WebGpu  – backend PC (wgpu-native) i przeglądarki (navigator.gpu)
+Blokolo.Gpu.OpenGL  – obecny render jako tryb zgodności
+Blokolo.Desktop     – okno, OpenAL, pliki, wątki, Tailscale/TCP
+Blokolo.Web         – net10.0-browser: canvas, requestAnimationFrame, Gamepad API, dotyk, WebAudio,
                          OPFS, WebSocket, PWA
-BlockCraft.Android     – (opcjonalnie) net-android + wgpu (Vulkan)
+Blokolo.Android     – (opcjonalnie) net-android + wgpu (Vulkan)
 ```
 
 ## Kroki

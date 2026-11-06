@@ -12,9 +12,9 @@ if (Test-Path -LiteralPath $netOutput) {
     throw 'Wybierz nowy katalog wyników, aby nie użyć sygnałów poprzedniego testu.'
 }
 New-Item -ItemType Directory -Path $netOutput | Out-Null
-dotnet build (Join-Path $netRepo 'src\BlockCraft') -c Release --nologo -v quiet
+dotnet build (Join-Path $netRepo 'src\Blokolo') -c Release --nologo -v quiet
 if ($LASTEXITCODE -ne 0) { throw 'Kompilacja nie powiodła się.' }
-$netExe = Join-Path $netRepo 'src\BlockCraft\bin\Release\net10.0\BlockCraft.exe'
+$netExe = Join-Path $netRepo 'src\Blokolo\bin\Release\net10.0\Blokolo.exe'
 $netProcesses = @()
 try {
     foreach ($netRole in @('host', 'join')) {

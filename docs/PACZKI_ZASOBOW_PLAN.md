@@ -1,6 +1,6 @@
 # Paczki zasobów Minecraft 1.8 — plan
 
-Cel: BlockCraft wczytuje oficjalne paczki zasobów 1.8 (`.zip` albo folder z `pack.mcmeta`
+Cel: Blokolo wczytuje oficjalne paczki zasobów 1.8 (`.zip` albo folder z `pack.mcmeta`
 i `assets/minecraft/...`) — tak jak menu „Paczki zasobów” w MC 1.8.
 Mody Java (Forge, LiteLoader, Bukkit) są poza zakresem: wymagałyby JVM i odtworzenia API Minecrafta.
 
@@ -15,13 +15,13 @@ Po każdym etapie: kompilacja, selftest, ręczne sprawdzenie w grze, **stop i od
 
 ## Etap 1 — Paczki, ekran i tekstury bloków/przedmiotów  *(łączy pkt 1–3 z analizy)*
 
-- `resourcepacks/` w katalogu gry (`%APPDATA%\.blockcraft\resourcepacks`): paczki `.zip` i foldery.
+- `resourcepacks/` w katalogu gry (`%APPDATA%\.blokolo\resourcepacks`): paczki `.zip` i foldery.
 - Odczyt `pack.mcmeta` (`pack_format`, `description`) i `pack.png`; ostrzeżenie, gdy `pack_format` ≠ 1.
 - Wbudowana pozycja „Minecraft 1.8 (oryginalne)” — czyta `client.jar`, który gra już pobiera.
 - Ekran „Paczki zasobów...” w Ustawieniach: dwie listy (dostępne / aktywne), dodawanie, usuwanie,
   zmiana kolejności, „Otwórz folder paczek”, „Gotowe” = zastosuj bez restartu.
 - Ustawienie `ResourcePacks` (lista nazw) w `options.json`; parametr `--resourcepack <nazwa>` do testów.
-- Tabela przypisań: nazwa tekstury BlockCraft → plik 1.8 (`blocks/…`, `items/…`) + przekształcenia
+- Tabela przypisań: nazwa tekstury Blokolo → plik 1.8 (`blocks/…`, `items/…`) + przekształcenia
   (klatka z paska animacji, barwienie skórzanej zbroi, nakładki itp.). ~380 nazw zgodnych automatycznie,
   reszta jawnie w tabeli; nazwy bez odpowiednika zostają generowane.
 - Animacje z `.mcmeta` (woda, lawa, ogień, portal, …): klatki, `frametime`, `frames`.
@@ -43,7 +43,7 @@ w tym z repozytorium git, np. https://github.com/b-y-t-e/blockcraft-plugins
 
 - **Rodzaje źródeł:**
   - folder lokalny: każdy podfolder z `pack.mcmeta` i każdy `.zip` to paczka; folderów może być wiele;
-  - repozytorium git (URL + opcjonalnie gałąź/tag): klon w `%APPDATA%\.blockcraft\sources\<nazwa>`, przy starcie
+  - repozytorium git (URL + opcjonalnie gałąź/tag): klon w `%APPDATA%\.blokolo\sources\<nazwa>`, przy starcie
     `git pull --ff-only` w tle z limitem czasu; bez sieci gra używa ostatniej pobranej wersji;
   - lokalny checkout repo (do testów, np. `D:\work\sources\blockcraft-plugins`): czytany wprost, bez pobierania.
 - **Konfiguracja na trzy sposoby:**
@@ -90,7 +90,7 @@ Gra dalej ma atlas 16x16 w pamięci (ikony 3D, kolizje kształtów); na GPU idzi
 czcionka `font/ascii.png` (szerokości jak w 1.8, HD; polskie litery z czcionki gry), cząsteczki z `particle/particles.png`
 i wybuch z `entity/explosion.png`, słońce, fazy księżyca, chmury, deszcz i śnieg z `environment/`, mapy kolorów trawy
 i liści z `colormap/` (przebudowa chunków po zmianie).
-Świadomie bez zmian: logo (gra nazywa się BlockCraft, `gui/title/minecraft.png` ma napis Minecraft), zakładki i tło trybu
+Świadomie bez zmian: logo (gra nazywa się Blokolo, `gui/title/minecraft.png` ma napis Minecraft), zakładki i tło trybu
 kreatywnego, okna statywu, stołu do zaklęć, kowadła, latarni, konia, wieśniaka, lejka i dozownika (własne układy — do zrobienia
 przy okazji).
 **Czcionka Unicode — zrobiona (gałąź `feature/czcionka-unicode`):** znaki spoza czcionki gry (cyrylica, greka, akcenty, hebrajski,
@@ -166,9 +166,9 @@ Pierwotny plan:
 
 - Kod: `Core/ResourcePacks.cs` (paczki), `Render/PackTextures.cs` (przypisania, .mcmeta, skalowanie),
   `Gui/ResourcePackScreen.cs` (ekran), `GameResourcePacks.cs` (przeładowanie), `ResourcePackSelfTest.cs`.
-- Gra: Ustawienia → „Paczki zasobów...”. Paczki `.zip` do `%APPDATA%\.blockcraft\resourcepacks`.
+- Gra: Ustawienia → „Paczki zasobów...”. Paczki `.zip` do `%APPDATA%\.blokolo\resourcepacks`.
 - Uruchomienie z paczką na jedną sesję: `python run.py -- --resourcepack minecraft-1.8`.
-- Zrzuty porównawcze (bez paczki / z paczką): `BlockCraft.exe --showcase --packs-preview [--resourcepack NAZWA]`
+- Zrzuty porównawcze (bez paczki / z paczką): `Blokolo.exe --showcase --packs-preview [--resourcepack NAZWA]`
   → `bin/Release/net10.0/showcase/`.
 - Selftest: `--selftest --packs-only`. Oryginalne tekstury 1.8 pokrywają 662 z 723 tekstur gry.
 
@@ -214,7 +214,7 @@ Stan: zrobione — do odbioru (gałąź `feature/pad`).
 - Klawiatura ekranowa: sama przy polu tekstowym (czat, wyszukiwanie, nazwy, tabliczki, książki, kowadło, blok poleceń);
   A wpisz, B usuń, X spacja, Y ukryj (Back pokazuje znowu), Start Enter, LT Shift, RT symbole.
 - Mysz albo klawiatura wyłączają tryb pada (wraca kursor systemowy). Pady bez mapowania w GLFW: `gamecontrollerdb.txt` obok gry.
-- Sprawdzenie bez pada: `BlockCraft.exe --showcase --pad-preview` (zrzuty `pad_*.png`), selftest `--selftest --pad-only`.
+- Sprawdzenie bez pada: `Blokolo.exe --showcase --pad-preview` (zrzuty `pad_*.png`), selftest `--selftest --pad-only`.
 - Ikony przycisków: Xbox albo PlayStation (krzyżyk/kółko/kwadrat/trójkąt, L1/R2) wg nazwy pada lub ustawienia „Ikony” w „Kontroler...”.
 - Listy (światy, języki, paczki zasobów): krzyżak chodzi po wierszach i przewija listę; na wybranych paczkach A usuwa, X przesuwa wyżej.
 

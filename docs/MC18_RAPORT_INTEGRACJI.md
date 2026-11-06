@@ -20,7 +20,7 @@ i chatka są widoczne, ale kamera monumentu pokazuje głównie wodę. Ujęcie
 wymaga poprawy; sam znacznik OK nie jest dowodem weryfikacji wyglądu monumentu.
 Nadal do zrobienia: pogoda i jej zapis/sieć/render/dźwięki, spawn zwykłych
 strażników w monumentach i pełny autotest OW. Nie oznaczono całego OW jako
-ukończonego. Wydania BlockCraft_Gra jeszcze nie odświeżono o te zmiany.
+ukończonego. Wydania Blokolo_Gra jeszcze nie odświeżono o te zmiany.
 
 ## Kontynuacja integracji, 2026-10-31
 
@@ -40,7 +40,7 @@ Test dwóch procesów przez `gry.fimson.pl` zakończony OK dla hosta i gościa:
 ładunku wagonika, zmianę oferty, zapłatę i wyczerpanie oferty bez powielenia,
 a następnie wyrzucenie, powrót i zamknięcie sieci. Obejrzano zrzuty konia,
 wagonika i handlu; ostatni zrzut nie zawiera już powielonej pszenicy.
-Build/publish Release przechodzą, wydanie `BlockCraft_Gra` odświeżone.
+Build/publish Release przechodzą, wydanie `Blokolo_Gra` odświeżone.
 
 Testy układów redstone mają wyłączony naturalny spawn od początku scenariusza,
 aby obce moby nie popychały wagoników. Dopisano diagnostykę pozycji i meta
@@ -73,7 +73,7 @@ Pełny selftest: **456 OK / 0 FAIL**, `.modus/audio-final-selftest.log`.
 Uruchomiona gra: audio enabled=True, odtwarzanie testowych efektów potwierdzone
 aktywnymi głosami, pełny autotest zakończony `AUTOTEST DONE`.
 To testy cyfrowego sygnału i działania gry; nie wykonano odsłuchu głośników.
-Zaktualizowano wydanie `BlockCraft_Gra`.
+Zaktualizowano wydanie `Blokolo_Gra`.
 
 Wstępna weryfikacja sprzed poprawek wykazała niestabilność wcześniejszego testu
 toru aktywacyjnego (`relay-wave1-selftest.log`, 442 OK/1 FAIL). Ostatni przebieg
@@ -130,7 +130,7 @@ NIE jest zakończony. Zakończono scalenie istniejących modułów i naprawy int
 ## Weryfikacja
 
 - Release: kompilacja przechodzi; pozostają 4 wcześniejsze ostrzeżenia.
-- Selftest wydania w `BlockCraft_Gra`: **318 OK, 0 FAIL**; log lokalny
+- Selftest wydania w `Blokolo_Gra`: **318 OK, 0 FAIL**; log lokalny
   `.modus/integration-selftest-final.log`.
 - Pełny autotest: `AUTOTEST DONE`; wszystkie raportowane warunki redstone OK.
   Obejrzano zrzut zasilonych lamp/tłoków oraz ekwipunku z poprawną orientacją ikon.
@@ -204,7 +204,7 @@ działania przywoływania za pomocą przedmiotu czaszki w zwykłej grze.
 Naprawy integracyjne po tym scaleniu: uniknięto pokazania napisów końcowych
 przy odrodzeniu po śmierci w Endzie; przemianowano pomocniczą metodę Withera,
 która zasłaniała właściwość LivingEntity.IsUndead. Pełna lista braków z innych
-modułów pozostaje aktualna. Napisy używają własnego tekstu BlockCraft.
+modułów pozostaje aktualna. Napisy używają własnego tekstu Blokolo.
 
 Powtórka testów gotowego wydania ujawniła wcześniejszą niestabilność krów:
 316 OK / 2 FAIL (liczba krów spadła z 2 do 0). Test rozmnażania współdzielił
@@ -228,7 +228,7 @@ Własna weryfikacja po scaleniu: Release OK, **379 OK / 0 FAIL** w selftest
 (`.modus/tora-integrated-selftest.log`), autotest `--autotest --mo` zakończony
 `MO-TEST KONIEC: OK` oraz `AUTOTEST DONE`. Obejrzano mo_06_konie,
 mo_17_gui_kon i mo_19_gui_handel. Zrzuty zachowane w
-`.modus/tora-integrated-autotest`; odświeżono wydanie `BlockCraft_Gra`.
+`.modus/tora-integrated-autotest`; odświeżono wydanie `Blokolo_Gra`.
 Pięć udanych powtórek z raportu Tory jest wynikiem jego testów, a nie pięcioma
 dodatkowymi przebiegami wykonanymi podczas integracji.
 
@@ -260,7 +260,7 @@ RS przerwana wyjątkiem). Po poprawce **442 OK, 0 FAIL** w
 
 Autotest `BC_AUTOTEST=rs` zakończony `AUTOTEST DONE`, warunki transportu OK.
 Obejrzano rs_10_tory, rs_11_wagoniki i rs_15_transport. Zrzuty zachowane
-w `.modus/nami-integrated-autotest`; zaktualizowano `BlockCraft_Gra`.
+w `.modus/nami-integrated-autotest`; zaktualizowano `Blokolo_Gra`.
 Sam raport Nami podaje 221 testów na jej gałęzi; 442 to wynik scalonego kodu.
 
 Nie testowano jazdy i odtwarzania relacji pasażera przez sieć. GUI kontenerów
@@ -292,7 +292,7 @@ pogody w dwóch graficznych oknach przez relay.
 
 To nie jest ukończenie OW: pozostały grafika i dźwięk opadów, pioruny,
 akumulacja śniegu/lód, dalsze interakcje z pogodą oraz naturalny spawn
-strażników w monumentach i wiedźm w chatkach. Wydanie `BlockCraft_Gra`
+strażników w monumentach i wiedźm w chatkach. Wydanie `Blokolo_Gra`
 nie zostało odświeżone o częściową implementację pogody. Pełna zgodność 1:1
 nie została potwierdzona. Dalsze braki ME i końcowa integracja pozostają otwarte.
 
@@ -302,7 +302,7 @@ Dodano ruchome kolumny deszczu/śniegu przy kamerze, z odcięciem na powierzchni
 terenu i dachów, wyborem opadów według temperatury biomu i brakiem opadów na
 pustyni, w Netherze i Endzie. Pogoda odbarwia niebo i mgłę, przygasza słońce,
 księżyc i gwiazdy. Tekstury opadów są proceduralne 16×16, zgodnie z aktualnym
-atlasem BlockCraft; nie są oryginalnymi teksturami MC. Pełna zgodność wizualna
+atlasem Blokolo; nie są oryginalnymi teksturami MC. Pełna zgodność wizualna
 1:1 nadal wymaga dopracowania.
 
 Deszcz odtwarza asset `ambient.weather.rain` przez jeden zapętlony głos
@@ -330,7 +330,7 @@ i `.modus/ow-precipitation-final/`.
 Pozostały pioruny (encja, efekty, dźwięk i sieć), naturalny spawn guardianów
 i wiedźm w strukturach, dokładniejsze odwzorowanie grafiki pogody i test
 pogody w dwóch oknach przez relay. Krok OW pozostaje w toku; wydanie
-BlockCraft_Gra jeszcze nie zostało odświeżone.
+Blokolo_Gra jeszcze nie zostało odświeżone.
 
 ### OW: pioruny, kontynuacja 2026-10-31
 
@@ -366,7 +366,7 @@ CustomName przez typ LivingEntity zamiast Mob i został poprawiony.
 
 OW pozostaje otwarty: naturalny spawn guardianów w monumentach i wiedźm
 w chatkach, dokładniejsze tekstury opadów i test pogody w dwóch graficznych
-oknach przez relay. Wydanie BlockCraft_Gra nie jest jeszcze odświeżone.
+oknach przez relay. Wydanie Blokolo_Gra nie jest jeszcze odświeżone.
 
 ### OW: spawn w strukturach, kontynuacja 2026-10-31
 
@@ -437,7 +437,7 @@ test pogody w dwóch oknach przez relay, ME i końcowa integracja/wydanie.
 
 ClientAssets pobiera oficjalne metadane i klienta 1.8 z serwerów Mojang,
 weryfikuje SHA1 archiwum i wyciąga wyłącznie rain.png/snow.png. Cache jest
-w `%LOCALAPPDATA%/BlockCraft/assets/client-1.8`, poza repozytorium i wydaniem.
+w `%LOCALAPPDATA%/Blokolo/assets/client-1.8`, poza repozytorium i wydaniem.
 Zapisy są atomowe, z osobnymi plikami tymczasowymi dla równoległych procesów.
 Pobieranie działa w tle; bez zasobów nadal działają proceduralne zamienniki.
 Dekoder PNG: StbImageSharp 2.30.16. Oryginalne obrazy mają rozmiar 64×256;
@@ -471,7 +471,7 @@ i `.modus/ow-native-weather-final/`.
 Etap funkcjonalnej integracji OW jest zakończony; nie oznacza to potwierdzenia
 całej gry jako 1:1. Pozostają wcześniejsze ograniczenia RNG/niezaładowanych
 chunków, testy wszystkich wariantów struktur i mobów, inne proceduralne
-tekstury oraz opisane odstępstwo audio grzmotu. BlockCraft_Gra nadal wymaga
+tekstury oraz opisane odstępstwo audio grzmotu. Blokolo_Gra nadal wymaga
 odświeżenia przy końcowej integracji. Następny etap: ME, potem finalne testy
 i raport wraz z problemami orkiestracji.
 
@@ -503,7 +503,7 @@ nie pełnym portem transformacji perspektywy GUI Minecrafta. Bez client.jar
 wygląd masek jest proceduralnym przybliżeniem. Brak opisów poszczególnych
 warstw w podpowiedzi przedmiotu. Nie deklaruję pełnej zgodności grafiki 1:1.
 Nowego przebiegu dwóch okien przez publiczny relay dla samych sztandarów nie
-wykonano. Alfa 1.0 w BlockCraft_Gra i komputer brata pozostały nietknięte.
+wykonano. Alfa 1.0 w Blokolo_Gra i komputer brata pozostały nietknięte.
 
 ### 2026-11-01 - ME-h 39d, system osiągnięć
 
@@ -603,7 +603,7 @@ obejrzany. Nie wykonano nowego testu dwóch okien przez publiczny przekaźnik.
 
 Ograniczenia względem pełnego 1:1: grafika spławika i śladów ryby uproszczona,
 punkt mocowania żyłki przy ręce przybliżony, brak zmiany modelu wędki u innych
-graczy. Generator losowy świata pozostaje BlockCraft.Rng; nie potwierdzono
+graczy. Generator losowy świata pozostaje Blokolo.Rng; nie potwierdzono
 identycznej sekwencji RNG Minecrafta ani kompletnego porównania trajektorii.
 Spławik nie jest utrwalany w zapisie świata. Czaszki i latarnia: nadal kroki56/57.
 
@@ -625,7 +625,7 @@ warstw według typu), z korekcją osi Y istniejącego FBO.
 Głowy można nosić w slocie hełmu, widać je także na stojaku i w ręce.
 Nie dodawano pobierania skinów kont Mojang: profil gracza zachowuje dane,
 ale renderuje domyślną twarz Steve'a. To jawne ograniczenie odwzorowania.
-Transformacje modeli w GUI i ręce są dopasowane do renderera BlockCraft;
+Transformacje modeli w GUI i ręce są dopasowane do renderera Blokolo;
 nie są pełnym portem wszystkich pól display modeli Minecrafta 1.8.
 
 Wither.TrySummon sprawdza teraz rzeczywisty typ1 w SkullTile, zamiast każdego
@@ -690,7 +690,7 @@ Obejrzane końcowe me_26_latarnia (piramida i kolory) i me_27_latarnia_gui
 (wszystkie przyciski i sloty, bez nakładania tekstu). Dowody i log zachowane
 w .modus/beacon-me-evidence. Brak testu nowego GUI przez publiczny relay.
 GUI używa polskich etykiet zamiast oryginalnego atlasu przycisków;
-render promienia korzysta z oświetlenia/mgły i mieszania BlockCraft,
+render promienia korzysta z oświetlenia/mgły i mieszania Blokolo,
 nie odtwarza oddzielnego additive pass vanilla. Bez deklaracji pełnej
 zgodności graficznej 1:1. Alfa 1.0, instalacje i komputer brata nietknięte.
 
@@ -707,7 +707,7 @@ Nowe haki w `Modules.cs`: `TexBl2`, `BlocksBl2`, `ItemsBl2`, `RecipesBl2`, `Enti
 81 doniczka. GuiKind skrzyni Endu: `(GuiKind)70` (rejestracja w ContainerFactory). Protokół sieci podbity do 9:
 C2S.EditBook = 40, C2S.RequestStats = 41, S2C.Statistics = 40 (numery wysokie, żeby nie zderzyć się z innymi pionkami).
 
-- Skrzynia Endu (211): twardość 22.5, odporność setResistance(1000) zapisana w skali BlockCraft jako 600 (= 3000 / 5, jak
+- Skrzynia Endu (211): twardość 22.5, odporność setResistance(1000) zapisana w skali Blokolo jako 600 (= 3000 / 5, jak
   obsydian 1200), światło 7, kilof poziom 0, drop 8 obsydianu, jedwabny dotyk daje skrzynię, receptura 8 obsydianu + oko
   Endu. Wspólny ekwipunek 27 slotów `Player.EnderInventory` (zapis w PlayerData.EnderItems), osobny dla każdego gracza,
   blok nad skrzynią blokuje otwarcie, odejście dalej niż 8 bloków i zniszczenie zamyka GUI. Wieko jak TileEntityEnderChest
@@ -808,7 +808,7 @@ Pozostałe różnice wobec klienta 1.8: tekst JSON parsuje `clickEvent`, `hoverE
 i `insertion`, ale czat nie obsługuje interakcji. Kody fontu `k-o` są ignorowane.
 Cząstki używają najbliższego dostępnego rodzaju, a parametry prędkości i trybu
 nie odwzorowują wszystkich zachowań vanilla. `/entitydata` zapisuje tylko pola
-obsługiwane przez modele encji BlockCraft. Kryteria `stat.*` aktualizują się
+obsługiwane przez modele encji Blokolo. Kryteria `stat.*` aktualizują się
 z dostępnych statystyk gracza. Część nazw slotów `/replaceitem` (enderchest,
 koń) nie ma jeszcze magazynu w tej implementacji. Wynik serca w HUD Tab i
 proceduralny render granicy są uproszczone. Test sieci używa pętli lokalnej,

@@ -11,5 +11,5 @@ Host multiplayer powinien posiadać jeden `DimensionSet` na sesję i aktualizowa
 Zmiany zawartości są w osobnych plikach częściowych modułu NE. Identyfikatory należą
 do zakresów zadeklarowanych w `BlockIds.cs` i `Item.cs`.
 
-Weryfikacja: `dotnet build -c Release`, `BlockCraft.exe --selftest`, `BlockCraft.exe --autotest`.
+Weryfikacja: `dotnet build -c Release`, `Blokolo.exe --selftest`, `Blokolo.exe --autotest`.
 Status implementacji i znane różnice zostaną uzupełnione po testach.

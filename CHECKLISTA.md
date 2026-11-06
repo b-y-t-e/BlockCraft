@@ -13,10 +13,10 @@ Stan integracji MC 1.8 z 2026-11-02: [raport i lista braków](docs/MC18_RAPORT_I
 
 Rejestracja wszystkich mobów i biomów nie oznacza pełnej zgodności każdej mechaniki, grafiki ani generacji z oryginałem. Raport opisuje ograniczenia; część liczników statystyk nadal nie ma wyzwalaczy.
 
-# BlockCraft - checklista implementacji (klon Minecrafta 1.8 w .NET)
+# Blokolo - checklista implementacji (historyczna: etap klonu Minecrafta 1.8 w .NET)
 
 ## Narzędzia / technologie
-- .NET 8 (C#), jeden projekt gry `BlockCraft` + projekt testów `BlockCraft.Tests` (xUnit)
+- .NET 8 (C#), jeden projekt gry `Blokolo` + projekt testów `Blokolo.Tests` (xUnit)
 - **OpenTK 4.x** - okno (GLFW), wejście (klawiatura/mysz), OpenGL 3.3 core
 - **StbImageWriteSharp** - zapis screenshotów PNG (F2 + autotesty wizualne)
 - **NAudio** (opcjonalnie) - proceduralnie syntezowane dźwięki
@@ -27,12 +27,12 @@ Rejestracja wszystkich mobów i biomów nie oznacza pełnej zgodności każdej m
 ## Stan prac (2026-10-16)
 Legenda: `[x]` zrobione, `[~]` częściowo / stub, `[ ]` nie rozpoczęte.
 
-- Kod: ~17,2 tys. linii C# w `src/BlockCraft`; `dotnet build -c Release` → 0 błędów, 4 ostrzeżenia (m.in. CA2014 - `stackalloc` w pętli w `ChunkMesher.cs`)
-- Zbudowana gra w `BlockCraft_Gra/` (poza repo) uruchamia się - GL 3.3, Intel Iris Xe
+- Kod: ~17,2 tys. linii C# w `src/Blokolo`; `dotnet build -c Release` → 0 błędów, 4 ostrzeżenia (m.in. CA2014 - `stackalloc` w pętli w `ChunkMesher.cs`)
+- Zbudowana gra w `Blokolo_Gra/` (poza repo) uruchamia się - GL 3.3, Intel Iris Xe
 - **Następne kroki:**
   1. Multiplayer - moduł G działa przez Tailcat.Link; po scaleniu NE/OW podłączyć wymiary i pogodę przez `NetHooks` (opis: `docs/MC18_NET.md`)
   2. Dźwięki proceduralne - synteza NAudio w `Audio/`, podpiąć pod `Sound.Play`
-  3. Projekt `BlockCraft.Tests` (xUnit) - przenieść przypadki z `SelfTest.cs`
+  3. Projekt `Blokolo.Tests` (xUnit) - przenieść przypadki z `SelfTest.cs`
   4. Drobne: ostrzeżenie CA2014, `/weather` i `/locate` to atrapy
 
 ## Etap 1 - Fundament
@@ -81,7 +81,7 @@ Legenda: `[x]` zrobione, `[~]` częściowo / stub, `[ ]` nie rozpoczęte.
 - [x] Redstone: pył, pochodnia, dźwignia, przycisk, blok, lampa, repeater, TNT, tłok i lepki tłok, drzwi
 - [x] Multiplayer Tailcat.Link: host w grze, kod i zapamiętane parowanie, klient, chunki/bloki/TE/encje, modele i nicki graczy, kontenery, czat, ekwipunek, śmierć i respawn; test dwóch procesów przez prawdziwy przekaźnik (od 2026-10-31 gry.fimson.pl) i PNG z obu okien. Wymiary/pogoda wymagają integracji po scaleniu NE/OW; zbroja modelu i pęknięcia kopania innych graczy pozostają do dodania. Szczegóły: `docs/MC18_NET.md`.
 - [x] Dźwięki i muzyka  *(mikser 3D w `Audio/`, dźwięki i muzyka 1.8 z lokalnego cache assetów Mojang, zapasowe dźwięki proceduralne)*
-- [~] Testy jednostkowe + autotest wizualny, publish do pojedynczego folderu  *(zamiast xUnit: `--selftest` (`SelfTest.cs`) + `--autotest` (`GameAutotest.cs`); publish do `BlockCraft_Gra/` działa; brak projektu `BlockCraft.Tests`)*
+- [~] Testy jednostkowe + autotest wizualny, publish do pojedynczego folderu  *(zamiast xUnit: `--selftest` (`SelfTest.cs`) + `--autotest` (`GameAutotest.cs`); publish do `Blokolo_Gra/` działa; brak projektu `Blokolo.Tests`)*
 
 ## Weryfikacja modułu G (2026-10-30)
 

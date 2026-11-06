@@ -1,9 +1,9 @@
-# BlockCraft - research optymalizacji (2026-11-03)
+# Blokolo - research optymalizacji (2026-11-03)
 
 Cel od Filipa: mechaniki MC 1.8 bez zmian, tysiące FPS, brak lagów przy 100 000 TNT naraz,
 dobra gra na laptopach bez karty graficznej (iGPU Intel UHD/Iris Xe, Radeon Vega w APU).
 
-Dokument ma trzy części: (1) co dziś hamuje BlockCraft (z kodu), (2) jakich sztuczek używają
+Dokument ma trzy części: (1) co dziś hamuje Blokolo (z kodu), (2) jakich sztuczek używają
 inni (mody MC, silniki voxelowe, .NET), (3) plan wdrożenia z pomiarami. Każdy etap ma być
 mierzalny benchmarkiem i nie może zmienić mechaniki (selftest + autotesty muszą przechodzić).
 

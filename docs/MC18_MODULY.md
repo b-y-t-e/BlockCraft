@@ -1,4 +1,4 @@
-# Rozbudowa BlockCraft do MC 1.8 - zasady dla modułów
+# Rozbudowa Blokolo do MC 1.8 - zasady dla modułów
 
 Cel: odwzorować Minecraft 1.8 (Java Edition) 1:1 - wartości (twardość, odporność na wybuchy, dropy, czasy, obrażenia,
 HP mobów, receptury, szanse) i mechaniki jak w kodzie MC 1.8 (MCP). Wątpliwości: Minecraft Wiki (stan dla 1.8) i własna
@@ -56,6 +56,6 @@ TypeId tile entity: 1 piec, 2 skrzynia, 10-29 RS, 30-49 NE, 50-59 MO, 60-89 ME, 
   `mob.blaze.hit`, `random.click`), moduł A mapuje je na pliki.
 
 ## Testy
-- `dotnet build -c Release` w `src/BlockCraft` - 0 błędów.
-- `bin/Release/net10.0/BlockCraft.exe --selftest` (logika) i `--autotest` (zrzuty w `bin/Release/net10.0/autotest`).
+- `dotnet build -c Release` w `src/Blokolo` - 0 błędów.
+- `bin/Release/net10.0/Blokolo.exe --selftest` (logika) i `--autotest` (zrzuty w `bin/Release/net10.0/autotest`).
   Dopisz własne kroki autotestu w osobnym pliku (`partial class Game`) i oglądaj zrzuty (Read na PNG).

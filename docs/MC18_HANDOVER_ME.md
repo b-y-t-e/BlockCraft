@@ -52,7 +52,7 @@ i wcześniejsze narzędzia oracle są w nadrzędnym katalogu referencji.
 ## Pozostała integracja
 
 Krok 30: m.in. dragon_part i pasażerowie w sieci, końcowe testy, README,
-CHECKLISTA, raport i wydanie. `BlockCraft_Gra` nadal jest z `00d3ee0`, bez OW.
+CHECKLISTA, raport i wydanie. `Blokolo_Gra` nadal jest z `00d3ee0`, bez OW.
 Main nie zmieniano; merge wymaga końcowej akceptacji użytkownika według planu.
 W logach są 4 stare braki tekstur: item_baked_potato, item_poisonous_potato,
 item_pumpkin_seeds, item_melon_seeds - do naprawy przy ME/integracji.

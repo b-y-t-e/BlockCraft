@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kompiluje i uruchamia BlockCraft.
+"""Kompiluje i uruchamia Blokolo.
 
 Użycie:
     python run.py                  # Release, uruchom grę
@@ -13,11 +13,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-PROJECT = ROOT / "src" / "BlockCraft" / "BlockCraft.csproj"
+PROJECT = ROOT / "src" / "Blokolo" / "Blokolo.csproj"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Kompiluje i uruchamia BlockCraft.")
+    parser = argparse.ArgumentParser(description="Kompiluje i uruchamia Blokolo.")
     parser.add_argument("--debug", action="store_true", help="konfiguracja Debug zamiast Release")
     parser.add_argument("--no-build", action="store_true", help="pomiń kompilację")
     parser.add_argument("game_args", nargs=argparse.REMAINDER, help="argumenty dla gry (po --)")
@@ -35,7 +35,7 @@ def main() -> int:
             print("Kompilacja nie powiodła się.", file=sys.stderr)
             return build.returncode
 
-    exe_name = "BlockCraft.exe" if sys.platform == "win32" else "BlockCraft"
+    exe_name = "Blokolo.exe" if sys.platform == "win32" else "Blokolo"
     exe = PROJECT.parent / "bin" / config / "net10.0" / exe_name
     if not exe.exists():
         print(f"Nie znaleziono {exe} - uruchom bez --no-build.", file=sys.stderr)

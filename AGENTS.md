@@ -1,14 +1,14 @@
-# BlockCraft — zasady pracy
+# Blokolo — zasady pracy
 
-Gra wywodząca się z BlockCraft (klonu Minecrafta 1.8, github.com/fkliczewski/BlockCraft), rozwijana jako osobny projekt:
-MC 1.8 to punkt wyjścia, nie ograniczenie (pad, profile grafiki, efekty, nowe menu, mody). C# (.NET 10, OpenTK 4.8, OpenGL 3.3). Jeden projekt: `src/BlockCraft`. Teksty gry, komentarze
+Blokolo: gra wywodząca się z BlockCraft (klonu Minecrafta 1.8, github.com/fkliczewski/BlockCraft), rozwijana jako osobny projekt:
+MC 1.8 to punkt wyjścia, nie ograniczenie (pad, profile grafiki, efekty, nowe menu, mody). C# (.NET 10, OpenTK 4.8, OpenGL 3.3). Jeden projekt: `src/Blokolo`. Teksty gry, komentarze
 i dokumentacja po polsku.
 
 ## Budowanie, uruchamianie, testy
 
 - `python run.py` — kompilacja Release i gra; argumenty dla gry po `--` (np. `python run.py -- --selftest`).
-- `dotnet build src/BlockCraft -c Release` — sama kompilacja (stare ostrzeżenia: CS0108 ×2, CS8321, CA2014).
-- Selftest (logika, bez okna gry): `BlockCraft.exe --selftest` (cały, ~80 s) oraz zawężone: `--packs-only`, `--pad-only`,
+- `dotnet build src/Blokolo -c Release` — sama kompilacja (stare ostrzeżenia: CS0108 ×2, CS8321, CA2014).
+- Selftest (logika, bez okna gry): `Blokolo.exe --selftest` (cały, ~80 s) oraz zawężone: `--packs-only`, `--pad-only`,
   `--search-only`, `--cmd-only`, `--audio-only`. Nowa funkcja = nowy plik `*SelfTest.cs` zarejestrowany w `SelfTest.cs`.
 - Podglądy ze zrzutami do `bin/Release/net10.0/showcase/`: `--showcase` (media README), `--showcase --packs-preview`
   (paczki zasobów), `--showcase --pad-preview` (pad podstawiany przez `Gamepad.Inject`, bez sprzętu), `--showcase --menus-preview` (menu i ustawienia), `--autotest`.

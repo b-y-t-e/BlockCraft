@@ -1,8 +1,8 @@
-# Pomiary renderu (`BlockCraft.exe --stress render --rd N --fps 1000 [--scale P] [--laptop] [--no-cave]`)
+# Pomiary renderu (`Blokolo.exe --stress render --rd N --fps 1000 [--scale P] [--laptop] [--no-cave]`)
 
 Scena: świat domyślny, seed 12345, kamera na Y=110 nad spawnem, pitch 15, okno 1280x720.
-Po wczytaniu całego zasięgu 6 s postoju i 6 s obrotu kamery (60 stopni/s). Wynik w `blockcraft.log`
-(linie `STRESS render`), zrzut w `BlockCraft_Gra/stress/`. Na RTX pomiar bywa dwumodalny (+-20% między
+Po wczytaniu całego zasięgu 6 s postoju i 6 s obrotu kamery (60 stopni/s). Wynik w `blokolo.log`
+(linie `STRESS render`), zrzut w `Blokolo_Gra/stress/`. Na RTX pomiar bywa dwumodalny (+-20% między
 uruchomieniami tej samej wersji, stan sterownika), więc porównania robione kilka razy.
 
 ## RTX 5070 (Filip-PC), postój
@@ -40,12 +40,12 @@ Test na laptopie dell-f (Iris Xe) czeka na Filipa: brak zdalnego dostępu do teg
 
 ### Jak zmierzyć na laptopie
 
-Skopiować folder `BlockCraft_Gra` na laptop i uruchomić w nim (gra sama się zamknie po ~1 minucie):
+Skopiować folder `Blokolo_Gra` na laptop i uruchomić w nim (gra sama się zamknie po ~1 minucie):
 
 ```
-BlockCraft.exe --stress render --laptop --fps 1000
-BlockCraft.exe --stress render --rd 8 --fps 1000
+Blokolo.exe --stress render --laptop --fps 1000
+Blokolo.exe --stress render --rd 8 --fps 1000
 ```
 
-Wyniki są w `blockcraft.log` w tym samym folderze (linie `STRESS render`). Świat testowy "Stress ..."
-zostaje w `%APPDATA%\.blockcraft\saves` i można go usunąć.
+Wyniki są w `blokolo.log` w tym samym folderze (linie `STRESS render`). Świat testowy "Stress ..."
+zostaje w `%APPDATA%\.blokolo\saves` i można go usunąć.

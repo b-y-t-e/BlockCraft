@@ -1,4 +1,4 @@
-# Pomiary TNT (headless, `BlockCraft.exe --bench tnt N [--lit] [--limit S]`)
+# Pomiary TNT (headless, `Blokolo.exe --bench tnt N [--lit] [--limit S]`)
 
 Filip-PC (Ryzen 9 5900X), Release, superpłaski świat, seed 1234, promień 8 chunków.
 Bez `--lit`: kostka N bloków TNT zapalona w środku (reakcja łańcuchowa). Z `--lit`: N zapalonych TNT naraz (lont 80).
@@ -39,7 +39,7 @@ Bench, najdłuższy kawałek (= najdłuższy przestój klatki z powodu ticku):
 | 10 648 zapalone, `--slice 4` | 1676 ms | 21 ms | 83513F34CA5F2BD3 |
 | 97 336 łańcuch, `--slice 16` | 597 ms | 29 ms | FC2B0D07ED895D5C |
 
-Gra w oknie (`BlockCraft.exe --stress tnt N [--lit] --fps 1000`, RTX 5070, od zapalenia do ostatniego wybuchu):
+Gra w oknie (`Blokolo.exe --stress tnt N [--lit] --fps 1000`, RTX 5070, od zapalenia do ostatniego wybuchu):
 
 | Scenariusz | Najdłuższa klatka bez cięcia | Najdłuższa klatka z cięciem | Średnio FPS |
 |---|---|---|---|

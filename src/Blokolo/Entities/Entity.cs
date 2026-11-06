@@ -1,0 +1,520 @@
+using Blokolo.Core;
+using Blokolo.Items;
+using Blokolo.World;
+
+namespace Blokolo.Entities;
+
+public sealed class DamageSource
+{
+    public readonly string Type;
+    public readonly Entity Source;     // bezpośrednie źródło (np. strzała)
+    public readonly Entity Attacker;   // kto zaatakował
+    public bool BypassArmor;
+    public bool IsExplosion;
+    public bool IsFire;
+    /// <summary>DamageSource.isProjectile z 1.8 (strzały, kule ognia, rzucane przedmioty).</summary>
+    public bool IsProjectile => Type is "arrow" or "fireball" or "fireball_reflected" or "thrown";
+    public DamageSource(string type, Entity src = null, Entity attacker = null) { Type = type; Source = src; Attacker = attacker ?? src; }
+
+    public static readonly DamageSource Fall = new("fall") { BypassArmor = true };
+    public static readonly DamageSource Drown = new("drown") { BypassArmor = true };
+    public static readonly DamageSource Lava = new("lava") { IsFire = true };
+    public static readonly DamageSource Fire = new("fire") { IsFire = true, BypassArmor = true };
+    public static readonly DamageSource OnFire = new("onFire") { IsFire = true, BypassArmor = true };
+    public static readonly DamageSource Cactus = new("cactus");
+    public static readonly DamageSource Starve = new("starve") { BypassArmor = true };
+    public static readonly DamageSource InWall = new("inWall") { BypassArmor = true };
+    public static readonly DamageSource Void = new("outOfWorld") { BypassArmor = true };
+    public static readonly DamageSource Generic = new("generic") { BypassArmor = true };
+    public static DamageSource Mob(Entity e) => new("mob", e);
+    public static DamageSource PlayerAttack(Entity p) => new("player", p);
+    public static DamageSource Arrow(Entity arrow, Entity shooter) => new("arrow", arrow, shooter);
+    public static DamageSource Explosion(Entity e) => new("explosion", e) { IsExplosion = true };
+
+    public string DeathMessage(string victim)
+    {
+        string a = Attacker is Player p ? p.Name : Attacker is LivingEntity le ? le.DisplayName : null;
+        return Type switch
+        {
+            "fall" => victim + " spadł z wysoka",
+            "drown" => victim + " utonął",
+            "lava" => victim + " próbował pływać w lawie",
+            "fire" or "onFire" => victim + " spłonął",
+            "cactus" => victim + " został zakłuty na śmierć",
+            "starve" => victim + " umarł z głodu",
+            "inWall" => victim + " udusił się w ścianie",
+            "outOfWorld" => victim + " wypadł poza świat",
+            "explosion" => a != null ? victim + " został wysadzony przez " + a : victim + " wyleciał w powietrze",
+            "arrow" => victim + " został zastrzelony przez " + (a ?? "?"),
+            "fireball" or "fireball_reflected" => victim + " został trafiony kulą ognia przez " + (a ?? "?"),
+            "mob" or "player" => victim + " został zabity przez " + (a ?? "?"),
+            _ => victim + " zginął"
+        };
+    }
+}
+
+public abstract class Entity
+{
+    public int Id;
+    public World.World World;
+    private double _x, _y, _z;
+    /// <summary>Pozycja; zmiana aktualizuje siatkę przestrzenną świata (World.Grid).</summary>
+    public double X { get => _x; set { _x = value; GridOwner?.Moved(this); } }
+    public double Y { get => _y; set { _y = value; GridOwner?.Moved(this); } }
+    public double Z { get => _z; set { _z = value; GridOwner?.Moved(this); } }
+    public double PrevX, PrevY, PrevZ, MotionX, MotionY, MotionZ;
+    // siatka przestrzenna (World/EntityGrid.cs)
+    internal Blokolo.World.EntityGrid GridOwner;
+    internal long GridKey, GridSeq;
+    internal int GridIndex;
+    internal bool GridBig, GridCustomBox, GridPure;
+    internal Blokolo.World.EntityGrid.Cell GridCell;
+    public float Yaw, Pitch, PrevYaw, PrevPitch;
+    public float Width = 0.6f, Height = 1.8f;
+    public bool OnGround, CollidedH, CollidedV, InWater, InLava, Dead, Removed, NoClip, NoGravity;
+    public float FallDistance;
+    /// <summary>W pajęczynie (MC isInWeb): następny ruch spowolniony.</summary>
+    public bool InWeb;
+    public int Age;
+    public int FireTicks;
+    public float StepHeight = 0.5f;
+    public bool IsRemoteControlled; // pozycja z sieci
+    // interpolacja sieciowa
+    public double NetX, NetY, NetZ; public float NetYaw, NetPitch; public int NetSteps;
+    public int RiddenTicks;
+    public Entity RidingEntity, Passenger;
+    public string SaveId = Guid.NewGuid().ToString("N");
+    public string PendingVehicleId;
+
+    public virtual bool Attack(DamageSource source, float amount) => false;
+    public bool Mount(Entity vehicle)
+    {
+        if (vehicle == this || vehicle != null && (vehicle.Removed || vehicle.Passenger != null)) return false;
+        for (var parent = vehicle; parent != null; parent = parent.RidingEntity) if (parent == this) return false;
+        PendingVehicleId = null;
+        var old = RidingEntity;
+        if (old != null) old.Passenger = null;
+        RidingEntity = vehicle;
+        MotionX = MotionY = MotionZ = 0; FallDistance = 0;
+        if (vehicle != null) { vehicle.Passenger = this; vehicle.UpdatePassenger(); }
+        else if (old != null)
+        {
+            // Wysiadanie na wolne miejsce obok pojazdu.
+            var boxes = new List<AABB>();
+            bool found = false;
+            foreach (var (dx, dz) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+            {
+                var bb = new AABB(old.X + dx - Width / 2, old.Y + 0.5, old.Z + dz - Width / 2,
+                    old.X + dx + Width / 2, old.Y + 0.5 + Height, old.Z + dz + Width / 2);
+                if (World.GetCollisionBoxes(bb, boxes).Count != 0) continue;
+                SetPosition(old.X + dx, old.Y + 0.5, old.Z + dz); found = true; break;
+            }
+            if (!found) SetPosition(old.X, old.Y + old.Height, old.Z);
+        }
+        return true;
+    }
+    public virtual void UpdatePassenger()
+    {
+        if (Passenger == null) return;
+        if (Passenger.Dead || Passenger.Removed) { Passenger.Mount(null); return; }
+        Passenger.SetPosition(X, Y + 0.35, Z); Passenger.FallDistance = 0;
+    }
+
+    protected Entity(World.World w) { World = w; }
+
+    public abstract string TypeKey { get; }
+    public virtual bool Persistent => false;
+    public virtual float EyeHeight => Height * 0.85f;
+    public virtual bool CanBeCollidedWith => false;
+    public virtual bool CanBeAttacked => false;
+
+    public virtual AABB BoundingBox => new(X - Width / 2, Y, Z - Width / 2, X + Width / 2, Y + Height, Z + Width / 2);
+
+    public void SetPosition(double x, double y, double z) { _x = x; _y = y; _z = z; GridOwner?.Moved(this); }
+    public void SetPositionAndPrev(double x, double y, double z) { _x = PrevX = x; _y = PrevY = y; _z = PrevZ = z; GridOwner?.Moved(this); }
+
+    public virtual void PrevTick()
+    {
+        PrevX = X; PrevY = Y; PrevZ = Z; PrevYaw = Yaw; PrevPitch = Pitch;
+    }
+
+    public double IX(float pt) => PrevX + (X - PrevX) * pt;
+    public double IY(float pt) => PrevY + (Y - PrevY) * pt;
+    public double IZ(float pt) => PrevZ + (Z - PrevZ) * pt;
+
+    public virtual void Tick()
+    {
+        Age++;
+        if (IsRemoteControlled) { NetInterpolate(); return; }
+        if (!Dead && PendingVehicleId != null)
+        {
+            if (this is Player { Sneaking: true }) PendingVehicleId = null;
+            else
+            {
+                var vehicle = World.Entities.FirstOrDefault(e => !e.Removed && e.SaveId == PendingVehicleId);
+                if (vehicle != null) Mount(vehicle);
+            }
+        }
+        UpdateFluidState();
+        if (FireTicks > 0)
+        {
+            if (InWater || World.IsRainingAt(MathUtil.FloorToInt(X), MathUtil.FloorToInt(Y), MathUtil.FloorToInt(Z))
+                || World.IsRainingAt(MathUtil.FloorToInt(X), MathUtil.FloorToInt(Y + Height), MathUtil.FloorToInt(Z))) FireTicks = 0;
+            else
+            {
+                if (FireTicks % 20 == 0 && this is LivingEntity le) le.Attack(DamageSource.OnFire, 1f);
+                FireTicks--;
+            }
+        }
+        if (InLava) { if (this is LivingEntity le2) { le2.Attack(DamageSource.Lava, 4f); } SetFire(15); FallDistance *= 0.5f; }
+        if (Y < -64) OnVoid();
+    }
+
+    protected virtual void OnVoid() { if (this is LivingEntity le) le.Attack(DamageSource.Void, 4f); else Kill(); }
+
+    public void NetInterpolate()
+    {
+        if (NetSteps > 0)
+        {
+            X += (NetX - X) / NetSteps; Y += (NetY - Y) / NetSteps; Z += (NetZ - Z) / NetSteps;
+            Yaw += MathUtil.WrapDegrees(NetYaw - Yaw) / NetSteps; Pitch += (NetPitch - Pitch) / NetSteps;
+            NetSteps--;
+        }
+    }
+
+    public void UpdateFluidState()
+    {
+        var full = BoundingBox;
+        if (World.IsAirBox(MathUtil.FloorToInt(full.MinX), MathUtil.FloorToInt(full.MinY), MathUtil.FloorToInt(full.MinZ),
+                MathUtil.FloorToInt(full.MaxX), MathUtil.FloorToInt(full.MaxY), MathUtil.FloorToInt(full.MaxZ)))
+        { InWater = false; InLava = false; return; } // brak płynów w zasięgu obu testów IsAnyLiquid
+        var bb = full.Grow(-0.001, -0.401, -0.001);
+        bool wasIn = InWater;
+        InWater = World.IsAnyLiquid(bb, false);
+        InLava = World.IsAnyLiquid(BoundingBox.Grow(-0.1, -0.4, -0.1), true);
+        if (InWater)
+        {
+            if (!wasIn && FallDistance > 1 && this is LivingEntity)
+            {
+                World.PlaySound("splash", X, Y, Z, Math.Min(1f, (float)Math.Abs(MotionY) * 2f), 1f);
+                World.SpawnParticles(ParticleKind.Splash, X, Y + 0.2, Z, 20);
+            }
+            FallDistance = 0; FireTicks = 0;
+            // pchanie przez prąd
+            ApplyFlow(bb);
+        }
+    }
+
+    private void ApplyFlow(AABB bb)
+    {
+        if (this is Player p && (p.Flying || p.NetPuppet)) return; // gość: prąd liczy jego klient
+        double fx = 0, fz = 0; int n = 0;
+        for (int x = MathUtil.FloorToInt(bb.MinX); x <= MathUtil.FloorToInt(bb.MaxX); x++)
+            for (int y = MathUtil.FloorToInt(bb.MinY); y <= MathUtil.FloorToInt(bb.MaxY); y++)
+                for (int z = MathUtil.FloorToInt(bb.MinZ); z <= MathUtil.FloorToInt(bb.MaxZ); z++)
+                    if (World.GetBlock(x, y, z) == B.Water && World.GetMeta(x, y, z) != 0)
+                    {
+                        var (vx, vz) = ((FluidBlock)Block.Get(B.Water)).FlowVector(World, x, y, z);
+                        fx += vx; fz += vz; n++;
+                    }
+        if (n > 0)
+        {
+            double len = Math.Sqrt(fx * fx + fz * fz);
+            if (len > 0) { MotionX += fx / len * 0.014; MotionZ += fz / len * 0.014; }
+        }
+    }
+
+    public bool IsInsideOpaqueBlock()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            double x = X + ((i & 1) - 0.5) * Width * 0.8, y = Y + (((i >> 1) & 1) - 0.5) * 0.1 + EyeHeight, z = Z + (((i >> 2) & 1) - 0.5) * Width * 0.8;
+            var b = Block.Get(World.GetBlock(MathUtil.FloorToInt(x), MathUtil.FloorToInt(y), MathUtil.FloorToInt(z)));
+            if (b.Opaque && b.Solid) return true;
+        }
+        return false;
+    }
+
+    public bool IsHeadInWater()
+    {
+        double ey = Y + EyeHeight;
+        int bx = MathUtil.FloorToInt(X), by = MathUtil.FloorToInt(ey), bz = MathUtil.FloorToInt(Z);
+        if (World.GetBlock(bx, by, bz) != B.Water) return false;
+        double top = by + FluidBlock.HeightOf(World.GetMeta(bx, by, bz)) - 0.11;
+        return ey < top;
+    }
+    public bool IsHeadInLava()
+    {
+        double ey = Y + EyeHeight;
+        return World.GetBlock(MathUtil.FloorToInt(X), MathUtil.FloorToInt(ey), MathUtil.FloorToInt(Z)) == B.Lava;
+    }
+
+    private readonly List<AABB> _boxes = new();
+    protected virtual bool IsSneakingForEdge => false;
+
+    public void MoveWithCollision(double dx, double dy, double dz)
+    {
+        if (NoClip) { X += dx; Y += dy; Z += dz; return; }
+        if (InWeb) { InWeb = false; dx *= 0.25; dy *= 0.05000000074505806; dz *= 0.25; MotionX = 0; MotionY = 0; MotionZ = 0; }
+        double odx = dx, ody = dy, odz = dz;
+        var box = BoundingBox;
+
+        // Szybka ścieżka: w obszarze ruchu (z zapasem na blok pod stopami i kolizje z blokami) samo powietrze,
+        // brak ścian granicy świata. Wtedy nic nie przycina ruchu i nie ma kolizji: wynik identyczny z pełną ścieżką.
+        if (!(OnGround && IsSneakingForEdge))
+        {
+            var ex = box.Expand(dx, dy, dz);
+            if (World.IsAirBox(MathUtil.FloorToInt(ex.MinX - 0.01), MathUtil.FloorToInt(ex.MinY) - 1, MathUtil.FloorToInt(ex.MinZ - 0.01),
+                    MathUtil.FloorToInt(ex.MaxX + 0.01), MathUtil.FloorToInt(ex.MaxY) + 1, MathUtil.FloorToInt(ex.MaxZ + 0.01))
+                && World.NoBorderBoxes(ex))
+            {
+                var fb = box.Offset(0, dy, 0); fb = fb.Offset(dx, 0, 0); fb = fb.Offset(0, 0, dz);
+                X = (fb.MinX + fb.MaxX) / 2; Y = fb.MinY; Z = (fb.MinZ + fb.MaxZ) / 2;
+                CollidedH = false; CollidedV = false; OnGround = false;
+                UpdateStepSound(dx, dz);
+                if (dy < 0) FallDistance -= (float)dy;
+                return;
+            }
+        }
+
+        if (OnGround && IsSneakingForEdge)
+        {
+            const double step = 0.05;
+            while (dx != 0 && World.GetCollisionBoxes(box.Offset(dx, -1, 0), _boxes).Count == 0)
+            { if (dx < step && dx >= -step) dx = 0; else if (dx > 0) dx -= step; else dx += step; odx = dx; }
+            while (dz != 0 && World.GetCollisionBoxes(box.Offset(0, -1, dz), _boxes).Count == 0)
+            { if (dz < step && dz >= -step) dz = 0; else if (dz > 0) dz -= step; else dz += step; odz = dz; }
+            while (dx != 0 && dz != 0 && World.GetCollisionBoxes(box.Offset(dx, -1, dz), _boxes).Count == 0)
+            {
+                if (dx < step && dx >= -step) dx = 0; else if (dx > 0) dx -= step; else dx += step;
+                if (dz < step && dz >= -step) dz = 0; else if (dz > 0) dz -= step; else dz += step;
+                odx = dx; odz = dz;
+            }
+        }
+
+        World.GetCollisionBoxes(box.Expand(dx, dy, dz), _boxes);
+        var b = box;
+        foreach (var c in _boxes) dy = c.ClipY(b, dy);
+        b = b.Offset(0, dy, 0);
+        bool groundAfter = OnGround || (ody != dy && ody < 0);
+        foreach (var c in _boxes) dx = c.ClipX(b, dx);
+        b = b.Offset(dx, 0, 0);
+        foreach (var c in _boxes) dz = c.ClipZ(b, dz);
+        b = b.Offset(0, 0, dz);
+
+        if (StepHeight > 0 && groundAfter && (odx != dx || odz != dz))
+        {
+            double sdx = odx, sdy = StepHeight, sdz = odz;
+            World.GetCollisionBoxes(box.Expand(odx, StepHeight, odz), _boxes);
+            var sb = box;
+            foreach (var c in _boxes) sdy = c.ClipY(sb, sdy);
+            sb = sb.Offset(0, sdy, 0);
+            foreach (var c in _boxes) sdx = c.ClipX(sb, sdx);
+            sb = sb.Offset(sdx, 0, 0);
+            foreach (var c in _boxes) sdz = c.ClipZ(sb, sdz);
+            sb = sb.Offset(0, 0, sdz);
+            double down = -sdy;
+            foreach (var c in _boxes) down = c.ClipY(sb, down);
+            sb = sb.Offset(0, down, 0);
+            if (sdx * sdx + sdz * sdz > dx * dx + dz * dz)
+            {
+                dx = sdx; dz = sdz; dy = sdy + down; b = sb;
+            }
+        }
+
+        X = (b.MinX + b.MaxX) / 2; Y = b.MinY; Z = (b.MinZ + b.MaxZ) / 2;
+        CollidedH = odx != dx || odz != dz;
+        CollidedV = ody != dy;
+        OnGround = CollidedV && ody < 0;
+        UpdateStepSound(dx, dz);
+        if (odx != dx) MotionX = 0;
+        if (odz != dz) MotionZ = 0;
+        // blok pod stopami jak w MC (floor(posY - 0.2)): lądowanie, upadek, chodzenie (szlam, ruda redstone)
+        int fx = MathUtil.FloorToInt(X), fy = MathUtil.FloorToInt(Y - 0.2), fz = MathUtil.FloorToInt(Z);
+        var feet = Block.Get(World.GetBlock(fx, fy, fz));
+        if (ody != dy) { double my = MotionY; MotionY = 0; if (ody < 0) feet.OnEntityLanded(World, this, my); }
+
+        if (OnGround)
+        {
+            if (FallDistance > 0) { OnFall(FallDistance * feet.FallDamageMultiplier(World, this)); FallDistance = 0; }
+            if (!World.IsRemote && this is LivingEntity { Sneaking: false }) feet.OnEntityWalk(World, fx, fy, fz, this);
+        }
+        else if (dy < 0) FallDistance -= (float)dy;
+
+        // kolizje z blokami (kaktus itp.)
+        var bb = BoundingBox.Grow(0.001);
+        int x0 = MathUtil.FloorToInt(bb.MinX), x1 = MathUtil.FloorToInt(bb.MaxX);
+        int y0 = MathUtil.FloorToInt(bb.MinY), y1 = MathUtil.FloorToInt(bb.MaxY);
+        int z0 = MathUtil.FloorToInt(bb.MinZ), z1 = MathUtil.FloorToInt(bb.MaxZ);
+        if (!World.IsRemote)
+            for (int x = x0; x <= x1; x++)
+                for (int y = y0; y <= y1; y++)
+                    for (int z = z0; z <= z1; z++)
+                    {
+                        int id = World.GetBlock(x, y, z);
+                        if (id == B.Cactus)
+                        {
+                            var cb = new AABB(x + 1 / 16.0, y, z + 1 / 16.0, x + 15 / 16.0, y + 1, z + 15 / 16.0);
+                            if (cb.Intersects(bb)) Block.ById[id].OnEntityCollide(World, x, y, z, this);
+                        }
+                        else if (id != 0) Block.ById[id].OnEntityCollide(World, x, y, z, this); // MC doBlockCollisions (płyty, linka, tory)
+                    }
+    }
+
+    // ---- dźwięk kroków (MC 1.8: distanceWalkedModified / nextStepDistance) ----
+    private float _distWalked, _nextStep = 1f;
+    /// <summary>Zdarzenie kroku moba (np. mob.cow.step); null = dźwięk bloku pod nogami.</summary>
+    public virtual string StepSoundName => null;
+    protected virtual bool SilentSteps => this is LivingEntity le && le.Sneaking;
+
+    private void UpdateStepSound(double dx, double dz)
+    {
+        if (!(this is LivingEntity) || NoClip) return;
+        if (SilentSteps) return;
+        _distWalked += (float)Math.Sqrt(dx * dx + dz * dz) * 0.6f;
+        if (_distWalked <= _nextStep) return;
+        _nextStep = (int)_distWalked + 1;
+        int bx = MathUtil.FloorToInt(X), by = MathUtil.FloorToInt(Y - 0.2), bz = MathUtil.FloorToInt(Z);
+        if (InWater)
+        {
+            float f = (float)Math.Sqrt(MotionX * MotionX * 0.2 + MotionY * MotionY + MotionZ * MotionZ * 0.2) * 0.35f;
+            if (f > 1f) f = 1f;
+            World.PlaySound(this is Player ? "game.player.swim" : "game.neutral.swim", X, Y, Z, f, 1f + (World.Rand.NextFloat() - World.Rand.NextFloat()) * 0.4f);
+            return;
+        }
+        if (!OnGround) return;
+        int id = World.GetBlock(bx, by, bz);
+        if (id == 0) return;
+        var b = Block.Get(id);
+        if (b.IsLiquid) return;
+        string name = StepSoundName ?? Blokolo.Audio.SoundEvents.Step(b.Sound);
+        World.PlaySound(name, X, Y, Z, 0.15f, 1f);
+    }
+
+    protected virtual void OnFall(float distance) { }
+
+    public void Kill() { PendingVehicleId = null; Passenger?.Mount(null); if (RidingEntity != null) Mount(null); Dead = true; Removed = true; }
+
+    public double DistanceSq(Entity o) { double dx = X - o.X, dy = Y - o.Y, dz = Z - o.Z; return dx * dx + dy * dy + dz * dz; }
+    public double DistanceSq(double x, double y, double z) { double dx = X - x, dy = Y - y, dz = Z - z; return dx * dx + dy * dy + dz * dz; }
+    public double Distance(Entity o) => Math.Sqrt(DistanceSq(o));
+
+    public (double x, double y, double z) Look(float pt = 1f)
+    {
+        float yaw = PrevYaw + (Yaw - PrevYaw) * pt, pitch = PrevPitch + (Pitch - PrevPitch) * pt;
+        float yr = yaw * MathUtil.Deg2Rad, pr = pitch * MathUtil.Deg2Rad;
+        return (-MathF.Sin(yr) * MathF.Cos(pr), -MathF.Sin(pr), MathF.Cos(yr) * MathF.Cos(pr));
+    }
+
+    public virtual void OnCollideWithPlayer(Player p) { }
+    /// <summary>Uderzenie pioruna (MC: onStruckByLightning) - domyślnie 5 obrażeń od ognia i podpalenie; creeper, świnia, wieśniak nadpisują.</summary>
+    public virtual void OnStruckByLightning(Entity bolt) { if (this is LivingEntity le) le.Attack(new DamageSource("lightningBolt", bolt) { IsFire = true }, 5f); SetFire(8); }
+    /// <summary>Entity.setFire z 1.8: Ochrona przed ogniem skraca podpalenie istot.</summary>
+    public void SetFire(int seconds)
+    {
+        int t = seconds * 20;
+        if (this is LivingEntity le) t = Items.EnchantEffects.FireTime(le, t);
+        if (FireTicks < t) FireTicks = t;
+    }
+    public virtual bool Interact(Player p) => false;
+    /// <summary>Gracz uderza encję, która nie jest żywa (np. odbicie kuli ognia). True = obsłużone.</summary>
+    public virtual bool AttackedByPlayer(Player p) => false;
+
+    public virtual void Save(BinaryWriter bw)
+    {
+        bw.Write(X); bw.Write(Y); bw.Write(Z); bw.Write(MotionX); bw.Write(MotionY); bw.Write(MotionZ);
+        bw.Write(Yaw); bw.Write(Pitch); bw.Write(FallDistance); bw.Write(FireTicks); bw.Write(Age);
+    }
+    public virtual void Load(BinaryReader br)
+    {
+        X = br.ReadDouble(); Y = br.ReadDouble(); Z = br.ReadDouble();
+        MotionX = br.ReadDouble(); MotionY = br.ReadDouble(); MotionZ = br.ReadDouble();
+        Yaw = br.ReadSingle(); Pitch = br.ReadSingle(); FallDistance = br.ReadSingle(); FireTicks = br.ReadInt32(); Age = br.ReadInt32();
+        PrevX = X; PrevY = Y; PrevZ = Z; PrevYaw = Yaw; PrevPitch = Pitch;
+    }
+
+    /// <summary>Dane do synchronizacji sieciowej (dodatkowe).</summary>
+    public virtual int NetData => 0;
+    public virtual void SetNetData(int d) { }
+}
+
+public static class EntitySerializer
+{
+    /// <summary>Rejestr typów encji (klucz -> fabryka). Moduły rejestrują własne w Registries.cs (Registries.InitEntities).</summary>
+    public static readonly Dictionary<string, Func<World.World, Entity>> Types = new()
+    {
+        ["item"] = w => new ItemEntity(w, 0, 0, 0, new ItemStack(1)),
+        ["cow"] = w => new Cow(w),
+        ["pig"] = w => new Pig(w),
+        ["sheep"] = w => new Sheep(w),
+        ["chicken"] = w => new Chicken(w),
+        ["zombie"] = w => new Zombie(w),
+        ["skeleton"] = w => new Skeleton(w),
+        ["creeper"] = w => new Creeper(w),
+        ["spider"] = w => new Spider(w),
+        ["enderman"] = w => new Enderman(w),
+        ["arrow"] = w => new ArrowEntity(w),
+        ["tnt"] = w => new TntEntity(w, 0, 0, 0, 80),
+        ["falling_block"] = w => new FallingBlockEntity(w, 0, 0, 0, B.Sand, 0),
+        ["xp_orb"] = w => new XpOrbEntity(w, 0, 0, 0, 1),
+        ["thrown"] = w => new ThrownEntity(w, 0, null),
+    };
+
+    public static Entity Create(string key, World.World w) => Types.TryGetValue(key, out var f) ? f(w) : null;
+
+
+    public static byte[] SaveEntities(List<Entity> ents)
+    {
+        using var ms = new MemoryStream();
+        using var bw = new BinaryWriter(ms);
+        bw.Write(ents.Count);
+        foreach (var e in ents)
+        {
+            using var ems = new MemoryStream();
+            using var ebw = new BinaryWriter(ems);
+            e.Save(ebw);
+            bw.Write(e.TypeKey);
+            bw.Write((int)ems.Length);
+            bw.Write(ems.ToArray());
+        }
+        // Opcjonalny ogon zachowuje zgodność starych rekordów encji i zapisuje relacje także między chunkami.
+        bw.Write(0x52534452); // RDSR
+        bw.Write(ents.Count);
+        foreach (var e in ents) { bw.Write(e.SaveId); bw.Write(e.RidingEntity?.SaveId ?? e.PendingVehicleId ?? ""); }
+        return ms.ToArray();
+    }
+
+    /// <summary>Najkrótszy rekord encji: pusty klucz (1 bajt) i długość danych (4 bajty).</summary>
+    private const int MinEntityRecordSize = 5;
+
+    public static void LoadEntities(World.World w, byte[] data)
+    {
+        try
+        {
+            using var br = new BinaryReader(new MemoryStream(data));
+            int n = Core.BinaryLength.Read(br, MinEntityRecordSize);
+            var loaded = new Entity[n];
+            for (int i = 0; i < n; i++)
+            {
+                string key = br.ReadString();
+                var bytes = Core.BinaryLength.ReadBytes(br);
+                var e = Create(key, w);
+                if (e == null) continue;
+                try { e.Load(new BinaryReader(new MemoryStream(bytes))); loaded[i] = e; w.SpawnEntity(e); }
+                catch (Exception ex) { Log.Error("Entity load " + key + ": " + ex.Message); }
+            }
+            if (br.BaseStream.Length - br.BaseStream.Position >= 8 && br.ReadInt32() == 0x52534452)
+            {
+                int links = br.ReadInt32();
+                for (int i = 0; i < links; i++)
+                {
+                    string id = br.ReadString(), vehicle = br.ReadString();
+                    if (i >= n || loaded[i] == null) continue;
+                    loaded[i].SaveId = id;
+                    loaded[i].PendingVehicleId = vehicle.Length == 0 ? null : vehicle;
+                }
+            }
+        }
+        catch (Exception ex) { Log.Error("Entities load: " + ex.Message); }
+    }
+}

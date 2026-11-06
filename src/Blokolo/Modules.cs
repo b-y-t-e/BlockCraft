@@ -1,0 +1,112 @@
+using Blokolo.Entities;
+using Blokolo.Items;
+using Blokolo.Render;
+using Blokolo.World;
+
+// Punkty zaczepienia modułów rozbudowy do MC 1.8. Każdy moduł implementuje swoje metody częściowe (static partial void ...)
+// we własnych plikach, więc nie edytuje wspólnych list. Kolejność wywołań: tekstury -> bloki -> itemy -> receptury -> encje.
+// Moduły: Overworld (OW), Redstone (RS), NetherEnd (NE), Mobs (MO), Mechanics (ME), Bl2 (pionek BL2: skrzynia Endu, doniczka, książki, bariera, statystyki).
+
+namespace Blokolo.Render
+{
+    public static partial class TextureGen
+    {
+        static partial void TexOverworld();
+        static partial void TexRedstone();
+        static partial void TexNetherEnd();
+        static partial void TexMobs();
+        static partial void TexMechanics();
+        static partial void TexBl2();
+        static partial void TexCommands();
+        private static void ModuleTextures() { TexOverworld(); TexRedstone(); TexNetherEnd(); TexMobs(); TexMechanics(); TexBl2(); TexCommands(); }
+    }
+}
+
+namespace Blokolo.World
+{
+    public static partial class Blocks
+    {
+        static partial void BlocksOverworld();
+        static partial void BlocksRedstone();
+        static partial void BlocksNetherEnd();
+        static partial void BlocksMobs();
+        static partial void BlocksMechanics();
+        static partial void BlocksBl2();
+        static partial void BlocksCommands();
+        private static void ModuleBlocks() { BlocksOverworld(); BlocksRedstone(); BlocksNetherEnd(); BlocksMobs(); BlocksMechanics(); BlocksBl2(); BlocksCommands(); }
+    }
+}
+
+namespace Blokolo.Items
+{
+    public static partial class ItemRegistry
+    {
+        static partial void ItemsOverworld();
+        static partial void ItemsRedstone();
+        static partial void ItemsNetherEnd();
+        static partial void ItemsMobs();
+        static partial void ItemsMechanics();
+        static partial void ItemsBl2();
+        private static void ModuleItems() { ItemsOverworld(); ItemsRedstone(); ItemsNetherEnd(); ItemsMobs(); ItemsMechanics(); ItemsBl2(); }
+    }
+
+    public static partial class Recipes
+    {
+        /// <summary>Receptury rzemiosła i przetapiania modułów (Smelting.Table jest już zainicjowana).</summary>
+        static partial void RecipesOverworld();
+        static partial void RecipesRedstone();
+        static partial void RecipesNetherEnd();
+        static partial void RecipesMobs();
+        static partial void RecipesMechanics();
+        static partial void RecipesBl2();
+        private static void ModuleRecipes() { RecipesOverworld(); RecipesRedstone(); RecipesNetherEnd(); RecipesMobs(); RecipesMechanics(); RecipesBl2(); }
+    }
+}
+
+namespace Blokolo.Entities
+{
+    /// <summary>Rejestracja encji (EntitySerializer.Types), typów tile entity (TileEntity.Types) i rendererów (EntityRenderer.Custom*).</summary>
+    public static partial class Registries
+    {
+        private static bool _init;
+        static partial void EntitiesOverworld();
+        static partial void EntitiesRedstone();
+        static partial void EntitiesNetherEnd();
+        static partial void EntitiesMobs();
+        static partial void EntitiesMechanics();
+        static partial void EntitiesBl2();
+        static partial void EntitiesCommands();
+
+        public static void Init()
+        {
+            if (_init) return; _init = true;
+            EntitiesOverworld(); EntitiesRedstone(); EntitiesNetherEnd(); EntitiesMobs(); EntitiesMechanics(); EntitiesBl2(); EntitiesCommands();
+        }
+
+        /// <summary>Klucze encji, które są mobami (do /summon, jajek spawnu i spawnera).</summary>
+        public static readonly List<string> MobKeys = new() { "zombie", "skeleton", "creeper", "spider", "enderman", "cow", "pig", "sheep", "chicken" };
+
+        public static void Entity(string key, Func<World.World, Entity> factory) => EntitySerializer.Types[key] = factory;
+        public static void Mob(string key, Func<World.World, Entity> factory) { EntitySerializer.Types[key] = factory; if (!MobKeys.Contains(key)) MobKeys.Add(key); }
+        public static void Tile(int typeId, Func<TileEntity> factory) => TileEntity.Types[typeId] = factory;
+    }
+}
+
+namespace Blokolo.World
+{
+    /// <summary>
+    /// Haki między modułami bez zależności kompilacyjnej: właściciel ustawia delegat w swojej inicjalizacji,
+    /// pozostali wołają go, jeśli nie jest null.
+    /// </summary>
+    public static class WorldHooks
+    {
+        /// <summary>OW: najbliższa twierdza (dla oka Endu i /locate Stronghold). Zwraca środek albo null.</summary>
+        public static Func<World, int, int, (int x, int y, int z)?> FindStronghold;
+        /// <summary>OW: najbliższa struktura po nazwie MC (/locate Village, Temple, Mineshaft, Monument; NE: Fortress).</summary>
+        public static readonly Dictionary<string, Func<World, int, int, (int x, int y, int z)?>> Locators = new(StringComparer.OrdinalIgnoreCase);
+        /// <summary>OW: czy w danym miejscu pada deszcz (pogoda + biom + niebo). Używają: ogień, moby, wędka, cauldron.</summary>
+        public static Func<World, int, int, int, bool> IsRainingAt;
+        /// <summary>NE: wołane, gdy encja stoi w bloku portalu (Nether lub End). Argumenty: encja, id bloku portalu.</summary>
+        public static Action<Entities.Entity, int> OnEntityInPortal;
+    }
+}

@@ -57,11 +57,11 @@ Dołącz ponownie (ostatni host) korzysta z zapisanego parowania bez kodu.
 Host musi nadal mieć otwarty świat w sieci. Obie strony powinny używać tego
 samego wydania gry z tymi samymi rejestrami bloków, itemów i encji.
 
-Klucze i parowania: `%LOCALAPPDATA%\BlockCraft\net\host` lub `client`.
+Klucze i parowania: `%LOCALAPPDATA%\Blokolo\net\host` lub `client`.
 `--net-profile nazwa` wybiera foldery `nazwa-host` / `nazwa-client`, dzięki czemu
 dwie instancje na jednym komputerze mają osobne tożsamości. Nazwa: do 48 znaków
 ASCII (litery, cyfry, `_`, `-`). Dane świata i graczy pozostają w zwykłym zapisie
-świata w `%APPDATA%\.blockcraft\saves`.
+świata w `%APPDATA%\.blokolo\saves`.
 
 ## Podział odpowiedzialności
 
@@ -97,7 +97,7 @@ poleceń bez operatora jest w `NetServer.FreeCommands`.
 
 ## Protokół (podstawy od wersji 1)
 
-Własny protokół BlockCraft, nie protokół serwerów Minecraft Java. Aplikacja
+Własny protokół Blokolo, nie protokół serwerów Minecraft Java. Aplikacja
 Tailcat: `blockcraft`, maksymalnie 8 sparowanych peerów. Oddzielny uporządkowany
 kanał na kierunek: `blockcraft-c2s` i `blockcraft-s2c`. Jedna ramka kanału
 zawiera kolejne pakiety:
@@ -186,8 +186,8 @@ Pogoda czeka na scalenie i rejestrację OW.
 ## Weryfikacja
 
 ```powershell
-dotnet build src/BlockCraft -c Release
-dotnet src/BlockCraft/bin/Release/net10.0/BlockCraft.dll --selftest --selftest-output selftest.log
+dotnet build src/Blokolo -c Release
+dotnet src/Blokolo/bin/Release/net10.0/Blokolo.dll --selftest --selftest-output selftest.log
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/Test-Net.ps1
 ```
 

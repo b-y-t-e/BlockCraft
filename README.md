@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⛏️ BlockCraft
+# ⛏️ Blokolo
 
 **Gra na bazie Minecrafta 1.8 w C# / .NET 10 i OpenGL 3.3, z padem, efektami graficznymi i paczkami zasobów**
 
@@ -288,7 +288,7 @@ Blok poleceń (tylko `/give`, edycja w kreatywnym przez operatora) i wagonik z b
 
 ```bash
 git clone https://github.com/b-y-t-e/BlockCraft.git
-cd BlockCraft/src/BlockCraft
+cd Blokolo/src/Blokolo
 dotnet run -c Release
 ```
 
@@ -297,7 +297,7 @@ Albo z katalogu głównego: `python run.py` (argumenty dla gry po `--`, np. `pyt
 Publikacja do jednego folderu:
 
 ```bash
-dotnet publish src/BlockCraft -c Release -r win-x64 --self-contained -o BlockCraft_Gra
+dotnet publish src/Blokolo -c Release -r win-x64 --self-contained -o Blokolo_Gra
 ```
 
 ### Tryby uruchomienia
@@ -317,11 +317,11 @@ dotnet publish src/BlockCraft -c Release -r win-x64 --self-contained -o BlockCra
 | `--language KOD` | Język nazw przedmiotów na tę sesję (np. `en_US`) |
 | `--relay ADRES` | Przekaźnik sieci na tę sesję (np. `gry.fimson.pl`) |
 | `--bench tnt N [--lit] [--slice MS]` | Pomiar TNT bez okna z sumą kontrolną świata (`Bench.cs`, wyniki w `docs/perf/TNT_POMIARY.md`) |
-| `--stress tnt N [--lit]` | Pomiar płynności klatek w oknie przy N TNT, wynik w `blockcraft.log` (linia `STRESS`); zostawia świat "Stress ..." w zapisach |
+| `--stress tnt N [--lit]` | Pomiar płynności klatek w oknie przy N TNT, wynik w `blokolo.log` (linia `STRESS`); zostawia świat "Stress ..." w zapisach |
 | `--stress render [--rd N] [--scale P] [--laptop] [--no-cave]` | Pomiar FPS, czasu CPU i GPU klatki na stałej scenie (wyniki w `docs/perf/RENDER_POMIARY.md`) |
 | `--no-slice` | Wyłącza cięcie ciężkiego ticku na kawałki między klatkami (do porównań) |
 
-Zapisy światów i zrzuty ekranu (F2) trafiają do `%APPDATA%\.blockcraft`.
+Zapisy światów i zrzuty ekranu (F2) trafiają do `%APPDATA%\.blokolo`.
 
 ---
 
@@ -359,7 +359,7 @@ flowchart LR
 ```
 
 ```
-src/BlockCraft/
+src/Blokolo/
 ├── Core/         # matematyka, RNG, szum, logowanie, kierunki
 ├── World/        # bloki, chunki, generator, światło, płyny, redstone, zapis
 ├── Entities/     # gracz, moby, AI, pathfinding, spawner, TNT, eksplozje
@@ -378,8 +378,8 @@ Wszystkie GIF-y i zrzuty to prawdziwe klatki z gry, nagrane automatycznie:
 
 ```bash
 # 1. nagraj sceny (klatki PNG do bin/Release/net10.0/showcase)
-cd src/BlockCraft && dotnet build -c Release
-bin/Release/net10.0/BlockCraft.exe --showcase
+cd src/Blokolo && dotnet build -c Release
+bin/Release/net10.0/Blokolo.exe --showcase
 
 # 2. złóż GIF-y i zmniejszone zrzuty do docs/media
 cd ../../tools/readme-media && npm install && npm run media
@@ -400,7 +400,7 @@ cd ../../tools/readme-media && npm install && npm run media
 - [x] 🎨 Paczki zasobów 1.8 (tekstury HD, dźwięki, modele bloków pełnych, język), wyszukiwanie przedmiotów
 - [x] 🎮 Pad i klawiatura ekranowa
 - [ ] Modele z paczek dla schodów, płyt, płotków, drzwi i przedmiotów; wiele języków menu (TODO w planie paczek)
-- [ ] 🧪 Projekt testów xUnit (`BlockCraft.Tests`)
+- [ ] 🧪 Projekt testów xUnit (`Blokolo.Tests`)
 
 Szczegóły w [CHECKLISTA.md](CHECKLISTA.md).
 
