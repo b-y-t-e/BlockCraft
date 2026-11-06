@@ -31,7 +31,8 @@ potem pełnoekranowe przebiegi, na końcu GUI w pełnej rozdzielczości.
 ## Ustawienia
 
 - `GraphicsPreset`: Klasyczna / Ładna / Cacy / Ultra / Własna (zmiana pojedynczej opcji = Własna).
-- Osobne przełączniki w ekranie „Efekty graficzne…” (Ustawienia graficzne), wszystkie dostępne z pada.
+- Ustawienia → Grafika → „Profil grafiki” (Lekka/Klasyczna/Ładna/Cacy/Ultra, `GraphicsQuality.cs`, ustawia też zasięg
+  i skalę) oraz „Własne ustawienia...” → zakładka Efekty (pojedyncze efekty), wszystko dostępne z pada.
 - Profil słabego GPU: zintegrowana → Ładna (bez drogich efektów), programowa → Klasyczna.
 
 ## Etapy
@@ -42,8 +43,8 @@ Każdy etap: implementacja → zrzuty `--showcase --gfx-preview` → sprawdzenie
 
 | # | Etap | Status |
 |---|------|--------|
-| 1 | HDR FBO + tonemapping (ACES) + color grading (żywe kolory, winieta) + FXAA + system presetów | do sprawdzenia |
-| 2 | Falujące liście, trawa, kwiaty i woda (vertex shader, flaga materiału w wierzchołku) | do sprawdzenia |
+| 1 | HDR FBO + tonemapping (ACES) + color grading (żywe kolory, winieta) + FXAA + system presetów | zrobione (b12791b) |
+| 2 | Falujące liście, trawa, kwiaty i woda (vertex shader, flaga materiału w wierzchołku) | zrobione (b12791b) |
 | 3 | Lepsze niebo: rozpraszanie atmosferyczne, poświata słońca, gwiazdy, mgła zależna od wysokości | — |
 | 4 | Cienie od słońca/księżyca: 2–3 kaskady, miękkie PCF, cienie encji; światło nieba zostaje dla jaskiń | — |
 | 5 | Woda: fresnel, animowane normalne, odbicie nieba → SSR; widok pod wodą (kaustyki, dystorsja) | — |
@@ -57,7 +58,7 @@ Każdy etap: implementacja → zrzuty `--showcase --gfx-preview` → sprawdzenie
   lekko ciepły balans, delikatna winieta.
 - FXAA (wersja uproszczona 3.11) liczone na wartościach po tonemappingu w tym samym przebiegu.
 - Skala renderu 3D działa jak dotąd (bufor w mniejszej rozdzielczości, przebieg końcowy skaluje na ekran).
-- Ekran Ustawienia → Wyświetlanie → „Efekty: …”: preset i pojedyncze efekty (z pada jak inne przyciski).
+- Ustawienia → Grafika → Własne ustawienia... → Efekty: pojedyncze efekty (z pada jak inne przyciski).
 - Gdy shader albo bufor HDR się nie utworzy, gra przechodzi na render klasyczny (log: „Efekty graficzne wyłączone”).
 - Podgląd: `--showcase --gfx-preview` — ta sama scena w każdym presecie; self-test `--selftest --gfx-only`.
 
@@ -69,7 +70,7 @@ Każdy etap: implementacja → zrzuty `--showcase --gfx-preview` → sprawdzenie
   razem (bez szczelin). Woda tylko opada (fala w dół do ~0,1 bloku), nie odsłania brzegu.
 - Wiatr mocniejszy w deszczu i burzy. Wyłączone = wierzchołki bez zmian (obraz jak dotąd).
 - Bez falowania: trzcina (słupek bloków), pajęczyna, ogień, grzyby.
-- Opcja „Falujące rośliny” w „Efekty: …”; w presetach Ładna/Cacy/Ultra włączona, w Klasycznej wyłączona.
+- Opcja „Falujące rośliny” w Własne ustawienia → Efekty; w presetach Ładna/Cacy/Ultra włączona, w Klasycznej wyłączona.
 
 ### Poprawka — wybór karty graficznej (laptopy z dwiema kartami)
 

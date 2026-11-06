@@ -3,6 +3,34 @@
 **Cel:** jeden kod w .NET (silnie typowany), wersje na PC i w przeglądarce, później Android, z obsługą pada
 i dotyku oraz grafiką ładniejszą niż w Minecrafcie. Etapy grafiki: `docs/GRAFIKA_PLAN.md`.
 
+## Stan (aktualizować po każdym kroku)
+
+- **Zrobione:** krok 0. Etapy grafiki 1–2, wybór karty graficznej i VSync przez DWM: commit `b12791b`;
+  plan: `d718984`. Projekt przemianowany na Blokolo (`src/Blokolo`, commit `806b76e`). Pracujemy na `main`
+  w b-y-t-e/BlockCraft (osobny projekt, bez PR do fkliczewski/BlockCraft).
+- **Następny:** krok 1 – prototyp (szczegóły niżej). Nie zaczęty.
+- **Otwarte sprawy:**
+  - Rwanie obrazu na laptopie użytkownika (RTX 5070 Ti renderuje, ekran podłączony do Radeona 610M, 60 Hz):
+    poprawka VSync przez DWM włącza się (log „VSync: karta bez ekranu…”), ale użytkownik nie potwierdził
+    jeszcze, że rwanie zniknęło. Jeśli nie: Panel NVIDIA → Metoda prezentacji Vulkan/OpenGL → „Preferuj
+    warstwowo na łańcuchu wymiany DXGI”. Docelowo rozwiązuje to krok 4 (WebGPU).
+  - W tym samym katalogu bywa równoległa sesja: commitować tylko swoje pliki, nie przełączać gałęzi
+    bez uzgodnienia.
+- **Zasady pracy z użytkownikiem:** po każdym kroku/etapie stop i czekanie na sprawdzenie; commit dopiero po
+  akceptacji. Zmiany widoczne na ekranie sprawdzać zrzutem (`--showcase --gfx-preview`), nie tylko selftestem.
+
+## Krok 1 – prototyp (specyfikacja)
+
+- Osobny katalog `proto/web-webgpu` (nie rusza gry): projekt `net10.0-browser` (albo .NET 11, jeśli już
+  stabilne), host HTML + canvas, WebGPU przez `[JSImport]` (cienka warstwa: bufory, tekstura-atlas, pipeline,
+  render pass), shader WGSL terenu.
+- Zawartość: generator terenu i mesher z gry (kopia albo link do plików z `src/Blokolo`, bez OpenTK),
+  zasięg 8 chunków, kamera latająca (klawiatura + pad przez Gamepad API), licznik FPS i czasu meshowania.
+- Pomiary (Chrome na tym laptopie, RTX i Radeon 610M; jeśli się da – telefon z Androidem):
+  FPS przy zasięgu 8 i 12, czas meshowania chunka (jeden wątek), czas startu i rozmiar pobrania (AOT i bez).
+- Kryterium: ≥ 60 FPS przy zasięgu 8 na Radeonie 610M w przeglądarce i płynne doładowanie chunków
+  przy lataniu. Wynik zapisać tutaj i zdecydować: dalej kroki 2–5 albo korekta planu.
+
 ## Render
 
 WebGPU jako jeden render dla PC (wgpu-native: Direct3D 12 / Vulkan / Metal) i przeglądarki (`navigator.gpu`),
