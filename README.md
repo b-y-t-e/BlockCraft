@@ -2,7 +2,9 @@
 
 # ⛏️ BlockCraft
 
-**Klon Minecrafta 1.8 napisany od zera w C# / .NET 10 i OpenGL 3.3**
+**Gra na bazie Minecrafta 1.8 w C# / .NET 10 i OpenGL 3.3, z padem, efektami graficznymi i paczkami zasobów**
+
+Osobny projekt wywodzący się z [BlockCraft](https://github.com/fkliczewski/BlockCraft) (wiernego klonu MC 1.8); MC 1.8 jest tu punktem wyjścia.
 
 Stan rozbudowy MC 1.8: [raport integracji, wyniki testów i pozostałe braki](docs/MC18_RAPORT_INTEGRACJI.md).
 
@@ -285,7 +287,7 @@ Blok poleceń (tylko `/give`, edycja w kreatywnym przez operatora) i wagonik z b
 **Wymagania:** Windows, [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), karta graficzna z OpenGL 3.3.
 
 ```bash
-git clone https://github.com/fkliczewski/BlockCraft.git
+git clone https://github.com/b-y-t-e/BlockCraft.git
 cd BlockCraft/src/BlockCraft
 dotnet run -c Release
 ```

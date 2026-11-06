@@ -1,6 +1,7 @@
 # BlockCraft — zasady pracy
 
-Klon Minecrafta 1.8 w C# (.NET 10, OpenTK 4.8, OpenGL 3.3). Jeden projekt: `src/BlockCraft`. Teksty gry, komentarze
+Gra wywodząca się z BlockCraft (klonu Minecrafta 1.8, github.com/fkliczewski/BlockCraft), rozwijana jako osobny projekt:
+MC 1.8 to punkt wyjścia, nie ograniczenie (pad, profile grafiki, efekty, nowe menu, mody). C# (.NET 10, OpenTK 4.8, OpenGL 3.3). Jeden projekt: `src/BlockCraft`. Teksty gry, komentarze
 i dokumentacja po polsku.
 
 ## Budowanie, uruchamianie, testy
@@ -22,7 +23,8 @@ i dokumentacja po polsku.
   - pole tekstowe: `TextField` albo `WantsText`/`TextY`, żeby pokazała się klawiatura ekranowa;
   - nowa akcja w grze: `PadAction` z domyślnym przyciskiem w `Core/PadBindings.cs` (da się ją przypisać w „Przyciski...”);
   - nic tylko na klawisz bez odpowiednika na padzie; sprawdzić w `--showcase --pad-preview` i `--selftest --pad-only`.
-- Zachowanie jak w MC 1.8 (tam, gdzie gra je odtwarza); odstępstwa opisane w komentarzu.
+- Bazowa rozgrywka jak w MC 1.8; nowe funkcje mogą od niej odchodzić — opisać to w komentarzu i dokumentacji.
+- Repozytorium: b-y-t-e/BlockCraft (remote `fork`); bez PR do projektu źródłowego (`origin`).
 - Paczki zasobów: bez paczki gra wygląda jak dotąd; dane z paczek przez `ResourcePacks`, plan w `docs/PACZKI_ZASOBOW_PLAN.md`.
 - Menu: najwyżej kilka opcji naraz, jedna główna akcja na górze. Nowe ustawienie trafia do właściwej kategorii
   `OptionsScreen` (najwyżej 6 opcji w kategorii) z jednozdaniowym opisem w `Hint`.
