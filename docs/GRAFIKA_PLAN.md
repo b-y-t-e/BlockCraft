@@ -36,6 +36,8 @@ potem pełnoekranowe przebiegi, na końcu GUI w pełnej rozdzielczości.
 
 ## Etapy
 
+Etapy 3–7 robimy po przejściu na WebGPU (kroki 3–4 w `docs/PLATFORMY_PLAN.md`), żeby nie pisać ich dwa razy.
+
 Każdy etap: implementacja → zrzuty `--showcase --gfx-preview` → sprawdzenie przez użytkownika → commit.
 
 | # | Etap | Status |
