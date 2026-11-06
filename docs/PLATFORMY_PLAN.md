@@ -8,7 +8,8 @@ i dotyku oraz grafiką ładniejszą niż w Minecrafcie. Etapy grafiki: `docs/GRA
 - **Zrobione:** krok 0. Etapy grafiki 1–2, wybór karty graficznej i VSync przez DWM: commit `b12791b`;
   plan: `d718984`. Projekt przemianowany na Blokolo (`src/Blokolo`, commit `806b76e`). Pracujemy na `main`
   w b-y-t-e/BlockCraft (osobny projekt, bez PR do fkliczewski/BlockCraft).
-- **Następny:** krok 1 – prototyp (szczegóły niżej). Nie zaczęty.
+- **Następny:** krok 1 – prototyp (szczegóły niżej). Nie zaczęty. Szczegóły migracji renderu (warstwa `IGpu`,
+  budżety wydajności, kroki R0–R6): `docs/RENDER_PLAN.md`.
 - **Otwarte sprawy:**
   - Rwanie obrazu na laptopie użytkownika (RTX 5070 Ti renderuje, ekran podłączony do Radeona 610M, 60 Hz):
     poprawka VSync przez DWM włącza się (log „VSync: karta bez ekranu…”), ale użytkownik nie potwierdził
@@ -23,7 +24,8 @@ i dotyku oraz grafiką ładniejszą niż w Minecrafcie. Etapy grafiki: `docs/GRA
 
 - Osobny katalog `proto/web-webgpu` (nie rusza gry): projekt `net10.0-browser` (albo .NET 11, jeśli już
   stabilne), host HTML + canvas, WebGPU przez `[JSImport]` (cienka warstwa: bufory, tekstura-atlas, pipeline,
-  render pass), shader WGSL terenu.
+  render pass), shader WGSL terenu. Kod GPU od razu za pierwszą wersją interfejsu `IGpu` (krok R0 w
+  `docs/RENDER_PLAN.md`), żeby prototyp sprawdził też warstwę abstrakcji.
 - Zawartość: generator terenu i mesher z gry (kopia albo link do plików z `src/Blokolo`, bez OpenTK),
   zasięg 8 chunków, kamera latająca (klawiatura + pad przez Gamepad API), licznik FPS i czasu meshowania.
 - Pomiary (Chrome na tym laptopie, RTX i Radeon 610M; jeśli się da – telefon z Androidem):
@@ -67,7 +69,7 @@ Blokolo.Android     – (opcjonalnie) net-android + wgpu (Vulkan)
 | 0 | Commit obecnej pracy (etapy grafiki 1–2, wybór karty, VSync przez DWM) | czysty punkt startu |
 | 1 | Prototyp (1–2 dni): teren z chunkami w przeglądarce, .NET + WebGPU, pomiar FPS i czasu meshowania | decyzja, czy kierunek ma sens |
 | 2 | Wydzielenie `Core` i interfejsów platformy; wspólne wejście: pad + sterowanie dotykowe na ekranie; gra dalej na OpenGL | gra działa identycznie, testy bez okna |
-| 3 | Warstwa renderu w stylu WebGPU; obecny OpenGL przeniesiony pod nią | jedna ścieżka renderu |
+| 3 | Warstwa renderu w stylu WebGPU; obecny OpenGL przeniesiony pod nią (R1–R3 w `docs/RENDER_PLAN.md`) | jedna ścieżka renderu |
 | 4 | Backend WebGPU na PC jako domyślny (OpenGL = „Zgodność”), etapy grafiki 1–2 w WGSL | koniec problemów z VSync |
 | 5 | Wersja przeglądarkowa: Gamepad API, dotyk, zapis w OPFS, WebAudio, WebSocket (przekaźnik), PWA | gra w przeglądarce i na telefonie |
 | 6 | Etapy grafiki 3–7 raz dla wszystkich: niebo, cienie, woda z odbiciami, bloom, promienie słońca, chmury | piękna grafika wszędzie |
